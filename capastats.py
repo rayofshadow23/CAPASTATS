@@ -13,8 +13,8 @@ from transformers import pipeline
 # ========================
 # 2. Configurazioni
 # ========================
-FOLDER_PATH = "caparezza_lrc"
-STOPWORDS_FILE = "italian.txt"
+FOLDER_PATH = "lyrics"
+STOPWORDS_FILE = "stop-words/italian.txt"
 THEMES = {
     "politica": ["governo", "legge", "parlamento", "stato", "politico"],
     "religione": ["dio", "chiesa", "preghiera", "ges\u00f9"],
@@ -218,7 +218,7 @@ for file in files:
 # ========================
 # Salvataggio temi in CSV
 # ========================
-with open("temi_canzoni.csv", mode="w", newline="", encoding="utf-8") as csvfile:
+with open("outputs/temi_canzoni.csv", mode="w", newline="", encoding="utf-8") as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(["nome_canzone", "tema", "conteggio_parole"])
 

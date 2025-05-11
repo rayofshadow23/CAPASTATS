@@ -8,7 +8,7 @@ import os
 import time
 
 # Cartella dove salvare i .lrc
-output_folder = "caparezza_lrc"
+output_folder = "lyrics"
 os.makedirs(output_folder, exist_ok=True)
 
 # Impostazioni per disabilitare JavaScript
@@ -20,7 +20,7 @@ options.add_experimental_option("prefs", {
 })
 
 # PERCORSO a chromedriver.exe
-driver_path = "caparezza_lrc/chromedriver.exe"  # <--- Cambia questo percorso
+driver_path = "driver/chromedriver.exe"  # <--- Cambia questo percorso
 
 # Creazione del servizio e driver
 service = Service(driver_path)
