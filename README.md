@@ -34,7 +34,7 @@ pip install -r requirements.txt
 
 ## Come usare
 
-1. **Carica i file LRC**: Metti i file delle canzoni in formato `.lrc` nella cartella specificata (`caparezza_lrc`).
+1. **Carica i file LRC**: Metti i file delle canzoni in formato `.lrc` nella cartella specificata (`lyrics`). Le lyrics si possono trovare sul sito https://www.lyricsify.com/
 
 2. **Esegui lo script**: Esegui il file `caparezza.py` per iniziare l'analisi. Questo eseguirà diverse analisi sui file, tra cui:
    - Pulizia del testo.
