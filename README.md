@@ -54,8 +54,8 @@ pip install -r requirements.txt
 
 L'esecuzione produrrà:
 
-- Un grafico delle parole più frequenti.
-- Una nuvola di parole delle parole più comuni.
+- Un istogramma delle parole più frequenti. ![Istogramma](outputs/histogram.png)
+- Una nuvola di parole delle parole più comuni. ![WordCloud](outputs/WordCloud2.png)
 - Statistiche come il numero medio di parole per canzone e la canzone con la maggiore ricchezza lessicale.
 - Un file CSV con l'elenco dei temi rilevati nelle canzoni.
 
