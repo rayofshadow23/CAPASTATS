@@ -92,16 +92,48 @@ def read_lrc_file(file_path):
         return file.read()
 
 def sentiment_analysis(text, pipe):
-    return pipe(text)
+    # Imposta la troncatura automatica e la gestione dei batch
+    result = pipe(text, truncation=True, max_length=512)
+    return result
 
 def analyze_sentiment_of_lrc_files(directory, pipe):
     for filename in os.listdir(directory):
         if filename.endswith(".lrc"):
             file_path = os.path.join(directory, filename)
-            lyrics = read_lrc_file(file_path)
+            lyrics = read_lrc_file(file_path)  # Assicurati che questa funzione legga correttamente il testo
             sentiment = sentiment_analysis(lyrics, pipe)
             print(f"Sentiment per {filename}: {sentiment}")
 
+
+def parola_unica_piu_usata_per_canzone(files, stopwords_set):
+    risultati = []
+
+    for file in files:
+        with open(file, 'r', encoding='utf-8') as f:
+            text = f.read()
+        text = re.sub(r'\[\d{2}:\d{2}(?:\.\d{2})?\]', '', text)
+        words = re.findall(r'\b\w+\b', text.lower())
+        filtered = [w for w in words if w not in stopwords_set]
+        counter = Counter(filtered)
+        unique_words = {w: c for w, c in counter.items() if c == 1}
+
+        if unique_words:
+            # Parola unica più lunga (opzionale: puoi scegliere anche in base a criteri diversi)
+            top_word = max(unique_words.items(), key=lambda x: len(x[0]))
+            risultati.append((os.path.basename(file).replace(".lrc", ""), top_word[0], top_word[1]))
+
+    return risultati
+
+def presenza_parole_per_canzone(files, stopwords_set):
+    presenza_per_parola = Counter()
+
+    for file in files:
+        words = set(clean_lyrics(file))  # parole uniche nella canzone
+        parole_filtrate = {w for w in words if w not in stopwords_set}
+        for parola in parole_filtrate:
+            presenza_per_parola[parola] += 1
+
+    return presenza_per_parola
 
 def maggior_numero_parole_uniche(files):
     max_unique_words = 0
@@ -255,4 +287,34 @@ print(f"\nLa canzone con il maggior numero di parole uniche è '{file_name}' con
 # Analisi sentiment con modello BERT italiano
 #model_name = "MilaNLProc/feel-it-italian-sentiment"
 #pipe = pipeline("sentiment-analysis", model=model_name, framework="pt")
+
+#FOLDER_PATH = "lyrics"
 #analyze_sentiment_of_lrc_files(FOLDER_PATH, pipe)
+
+
+# Calcolo parole presenti in più canzoni (una volta per canzone)
+presenza_counter = presenza_parole_per_canzone(files, italian_stopwords)
+
+# Istogramma: top 20 parole più presenti
+top20 = presenza_counter.most_common(20)
+if top20:
+    parole, conteggi = zip(*top20)
+    plt.figure(figsize=(12, 6))
+    plt.bar(parole, conteggi, color='blue')
+    plt.xticks(rotation=45)
+    plt.title('Top 20 parole presenti in più canzoni (senza stopword)')
+    plt.tight_layout()
+    plt.show()
+else:
+    print("Nessuna parola significativa trovata per l’istogramma.")
+
+# Word Cloud: tutte le parole presenti in almeno una canzone
+if presenza_counter:
+    wordcloud = WordCloud(width=1000, height=600, background_color='white', colormap='viridis')
+    plt.figure(figsize=(12, 8))
+    plt.imshow(wordcloud.generate_from_frequencies(presenza_counter), interpolation='bilinear')
+    plt.axis('off')
+    plt.title('Word Cloud - Parole presenti in più canzoni (senza stopword)')
+    plt.show()
+else:
+    print("Nessuna parola significativa trovata per la word cloud.")
