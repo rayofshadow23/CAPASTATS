@@ -151,6 +151,21 @@ def maggior_numero_parole_uniche(files):
 
     return file_with_max_unique, max_unique_words
 
+def salva_parole_ripetute_csv(files, output_dir="outputs"):
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, "parole_ripetute.csv")
+
+    with open(output_path, mode="w", encoding="utf-8", newline="") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["Canzone", "Parola", "Conteggio"])
+
+        for file in files:
+            name = os.path.basename(file).replace(".lrc", "")
+            repeated = repeated_words(file)
+            for word, count in repeated.items():
+                if count > 10:
+                    writer.writerow([name, word, count])
+
 # ========================
 # 4. Codice principale
 # ========================
@@ -236,16 +251,14 @@ for file in files:
     for word, count in most_common_words(file):
         print(f"- {word}: {count}")
 
-# Parole ripetute >10 volte (in ordine decrescente)
-for file in files:
-    name = os.path.basename(file).replace(".lrc", "")
-    repeated = repeated_words(file)
-    if repeated:
-        print(f"\nParole ripetute >10 volte in '{name}':")
-        for word, count in sorted(repeated.items(), key=lambda x: x[1], reverse=True):
-            print(f"- {word}: {count}")
-    else:
-        print(f"\nNessuna parola ripetuta >10 volte in '{name}'.")
+
+# Parole più ripetute in ciascuna canzone
+
+files = [os.path.join(FOLDER_PATH, f) for f in os.listdir(FOLDER_PATH) if f.endswith(".lrc")]
+salva_parole_ripetute_csv(files)
+
+
+
 
 # ========================
 # Salvataggio temi in CSV
