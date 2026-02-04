@@ -21,6 +21,7 @@ THEMES = {
     "tecnologia": ["computer", "internet", "telefono", "software"],
     "amore": ["amore", "cuore", "passione", "bacio"]
 }
+SELF_REFERENCES = {"caparezza", "capa", "michele", "mikymix", "salvemini"}
 EXCLUDE_PREFIXES = ("[id:", "[ar:", "[al:", "[ti:", "[length:")
 
 # ========================
@@ -82,6 +83,14 @@ def repeated_words(file_path, threshold=10):
 def detect_themes(file_path):
     words = set(clean_lyrics(file_path))
     return {theme: sum(1 for w in words if w in kws) for theme, kws in THEMES.items() if any(w in words for w in kws)}
+
+def count_self_references(file_path):
+    """Count how many times Caparezza references himself by name"""
+    words = clean_lyrics(file_path)
+    count = sum(1 for w in words if w in SELF_REFERENCES)
+    # Also get breakdown by name
+    breakdown = {name: words.count(name) for name in SELF_REFERENCES}
+    return count, breakdown
 
 def sentiment_analysis_textblob(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
@@ -295,6 +304,38 @@ def maggior_numero_parole_uniche(files):
 # Utilizzo della funzione
 file_name, unique_count = maggior_numero_parole_uniche(files)
 print(f"\nLa canzone con il maggior numero di parole uniche è '{file_name}' con {unique_count} parole uniche.")
+
+# ========================
+# Self-Reference Analysis
+# ========================
+print("\n" + "="*50)
+print("AUTORIFERIMENTI (Caparezza si menziona per nome)")
+print("="*50)
+
+total_self_refs = 0
+songs_with_self_ref = []
+
+for file in files:
+    name = os.path.basename(file).replace(".lrc", "")
+    count, breakdown = count_self_references(file)
+    total_self_refs += count
+    if count > 0:
+        songs_with_self_ref.append((name, count, breakdown))
+        print(f"\n{name}:")
+        print(f"  Totale: {count}")
+        for ref_name, ref_count in breakdown.items():
+            if ref_count > 0:
+                print(f"    - '{ref_name}': {ref_count}")
+
+# Top self-referencing songs
+if songs_with_self_ref:
+    songs_with_self_ref.sort(key=lambda x: x[1], reverse=True)
+    print("\n" + "-"*40)
+    print("CLASSIFICA AUTORIFERIMENTI:")
+    for i, (name, count, _) in enumerate(songs_with_self_ref[:10], 1):
+        print(f"  {i}. {name}: {count}")
+
+print(f"\nTotale autoriferimenti in tutto il corpus: {total_self_refs}")
 
 
 # Analisi sentiment con modello BERT italiano
